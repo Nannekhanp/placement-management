@@ -1,6 +1,7 @@
 package com.placement.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.placement.entity.Job;
@@ -24,6 +25,31 @@ public class JobController {
     public List<Job> getJobs() {
         return jobService.getAllJobs();
     }
+    
+    @PutMapping("/job/{id}")
+    public ResponseEntity<?> updateJob(@PathVariable Long id, @RequestBody Job updatedJob) {
+        Job job = jobService.getJobById(id);
+        if (job == null) {
+            return ResponseEntity.status(404).body("Job not found");
+        }
+
+        job.setTitle(updatedJob.getTitle());
+        job.setCompany(updatedJob.getCompany());
+        job.setLocation(updatedJob.getLocation());
+        job.setDescription(updatedJob.getDescription());
+        job.setMinCgpa(updatedJob.getMinCgpa());
+
+        Job savedJob = jobService.updateJob(job);
+        return ResponseEntity.ok(savedJob);
+    }
+
+    // Delete Job
+    @DeleteMapping("/job/{id}")
+    public ResponseEntity<?> deleteJob(@PathVariable Long id) {
+        jobService.deleteJob(id);
+        return ResponseEntity.ok("Job deleted successfully");
+    }
+
 
     @PostMapping("/apply")
     public void applyJob(@RequestParam Long studentId, @RequestParam Long jobId) {

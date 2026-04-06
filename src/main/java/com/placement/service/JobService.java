@@ -18,22 +18,43 @@ public class JobService {
     public Job postJob(Job job) {
         return jobRepo.save(job);
     }
+    
+    public Job getJobById(Long id) {
+        return jobRepo.findById(id).orElse(null);
+    } 
+    
+    public Job updateJob(Job job) {
+        return jobRepo.save(job);
+    }
+
+    public void deleteJob(Long id) {
+    	jobRepo.deleteById(id);
+    }
 
     public List<Job> getAllJobs() {
         return jobRepo.findAll();
     }
 
    
-    public void applyJob(Long studentId, Long jobId) {
+	/*
+	 * public void applyJob(Long studentId, Long jobId) {
+	 * 
+	 * Job job = jobRepo.findById(jobId) .orElseThrow(() -> new
+	 * RuntimeException("Job not found"));
+	 * 
+	 * AppliedJob aj = new AppliedJob(); aj.setStudentId(studentId); aj.setJob(job);
+	 * 
+	 * appliedRepo.save(aj); }
+	 */
+    public AppliedJob applyJob(Long studentId, Long jobId) {
+        Job job = jobRepo.findById(jobId).orElse(null);
+        if (job == null) return null;
 
-        Job job = jobRepo.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
-
-        AppliedJob aj = new AppliedJob();
-        aj.setStudentId(studentId);
-        aj.setJob(job);   // ✅ IMPORTANT FIX
-
-        appliedRepo.save(aj);
+        AppliedJob applied = new AppliedJob();
+        applied.setStudentId(studentId);
+        applied.setJob(job);
+        applied.setStatus("PENDING"); // default
+        return appliedRepo.save(applied);
     }
 
     public List<AppliedJob> getAppliedJobs(Long studentId) {
